@@ -6,6 +6,11 @@ using System.Net.Sockets;
 using UnityEngine;
 using UnityEngine.UI;
 
+public enum FunctionTypes{
+    PartialViedoSeeThrough = 1, Mirroring = 2, VRController = 3, LipMotion = 4
+}
+
+
 public class TCP_Client : MonoBehaviour
 {
     public InputField IPInput, PortInput;
@@ -18,7 +23,7 @@ public class TCP_Client : MonoBehaviour
     StreamWriter writer;
     StreamReader reader;
 
-    private byte[] functionType;
+    private byte[] functionTypeBytes;
     
     public Text debugText;
 
@@ -67,29 +72,48 @@ public class TCP_Client : MonoBehaviour
         }
         Debug.Log("Connected to Server");
         
-        functionType = BitConverter.GetBytes(1);
-        Array.Reverse(functionType);
     }
     
     
-    public void Send(byte[] bytes)
+    public void Send(FunctionTypes functionType, byte[] bytes = null)
     {
         if (!socketReady) return;
         if (!stream.CanWrite) return;
+        
+        functionTypeBytes = BitConverter.GetBytes((int)functionType);
+        Array.Reverse(functionTypeBytes);
+        
+        switch (functionType)
+        {
+            case FunctionTypes.PartialViedoSeeThrough:
+                DataStructs.partialTrackingData.bytesLen = bytes.Length;
+                byte[] dataBytes = DataStructs.StructToBytes(DataStructs.partialTrackingData);
+                
+                stream.WriteAsync(functionTypeBytes, 0, functionTypeBytes.Length);
+                stream.WriteAsync(dataBytes, 0, dataBytes.Length);
+                stream.WriteAsync(bytes, 0, bytes.Length);
+                
+                stream.FlushAsync();
+                break;
+            case FunctionTypes.Mirroring:
 
-        byte[] compressByte = bytes;
-        //byte[] compressByte = Compress(bytes);
 
-        //byte[] lengthBytes = BitConverter.GetBytes(compressByte.Length);
-        //Array.Reverse(lengthBytes);
+                break;
+            
+            
+            case FunctionTypes.VRController:
+
+
+                break;
+            
+            
+            case FunctionTypes.LipMotion:
+                byte[] byteLengths = BitConverter.GetBytes((int)bytes.Length);
+                stream.WriteAsync(byteLengths, 0, byteLengths.Length);
+                stream.WriteAsync(bytes, 0, bytes.Length);
+                break;
+        }
 		
-        DataStructs.partialTrackingData.bytesLen = compressByte.Length;
-        byte[] dataBytes = DataStructs.StructToBytes(DataStructs.partialTrackingData);
-
-        stream.WriteAsync(functionType, 0, functionType.Length);
-        stream.WriteAsync(dataBytes, 0, dataBytes.Length);
-        stream.WriteAsync(compressByte, 0, compressByte.Length);
-        stream.FlushAsync();
     }
     
     void OnApplicationQuit()

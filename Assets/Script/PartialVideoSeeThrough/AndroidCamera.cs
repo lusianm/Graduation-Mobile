@@ -9,11 +9,13 @@ public class AndroidCamera : MonoBehaviour
     public int requestFPS = 24;
     public bool isUseFrontCamera;
     public int requestWidth, requestHeight;
+    public InputField requestWidthInput, requestHeightInput;
     
     
     //Variables for external reference
-    [SerializeField] RawImage background;
-    [SerializeField] Text debugText;
+    [SerializeField] private RawImage background;
+    [SerializeField] private Text debugText;
+    [SerializeField] private FunctionTypes functionType;
     
     TCP_Client client;
     
@@ -27,6 +29,15 @@ public class AndroidCamera : MonoBehaviour
     {
         client = TCP_Client.GetInstance();
     }
+
+    public void TurnOnCamera()
+    {
+        requestWidth = requestWidthInput.text == "" ? requestWidth : int.Parse(requestWidthInput.text);
+        requestHeight = requestHeightInput.text == "" ? requestHeight : int.Parse(requestHeightInput.text);
+        SetCamera();
+        StartCamera();
+    }
+    
 
     void SetCamera()
     {
@@ -87,7 +98,7 @@ public class AndroidCamera : MonoBehaviour
 
         camAvailable = true;
         camTexture2D = new Texture2D(cameraTexture.width, cameraTexture.height, TextureFormat.RGBA32, false);
-
+        
     }
 
     void Update()
@@ -105,12 +116,13 @@ public class AndroidCamera : MonoBehaviour
         debugText.text += "\nscreen width : " + Screen.width.ToString();
         debugText.text += "\nscreen height : " + Screen.height.ToString();
         debugText.text += "\ntexture format : " + camTexture2D.format.ToString();
-        debugText.text += "\nbyte Length : " + bytesToRawImage.Length.ToString();
         
         if (client.socketReady)
         {
             bytesToRawImage = camTexture2D.EncodeToJPG();
-            client.Send(bytesToRawImage);
+            debugText.text += "\nbyte Length : " + bytesToRawImage.Length.ToString();
+            debugText.text += "\function Type Length : " + functionType.ToString();
+            client.Send(functionType, bytesToRawImage);
         }
 
     }
