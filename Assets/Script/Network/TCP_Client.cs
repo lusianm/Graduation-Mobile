@@ -18,7 +18,7 @@ public class TCP_Client : MonoBehaviour
     StreamWriter writer;
     StreamReader reader;
 
-    private byte[] functionType;
+    private byte[] functionTypeBytes;
     
     public Text debugText;
 
@@ -67,29 +67,47 @@ public class TCP_Client : MonoBehaviour
         }
         Debug.Log("Connected to Server");
         
-        functionType = BitConverter.GetBytes(1);
-        Array.Reverse(functionType);
     }
     
     
-    public void Send(byte[] bytes)
+    public void Send(int functionType, byte[] bytes)
     {
         if (!socketReady) return;
         if (!stream.CanWrite) return;
+        
+        functionTypeBytes = BitConverter.GetBytes(functionType);
+        Array.Reverse(functionTypeBytes);
+        
+        switch (functionType)
+        {
+            case 1:
+                DataStructs.partialTrackingData.bytesLen = bytes.Length;
+                byte[] dataBytes = DataStructs.StructToBytes(DataStructs.partialTrackingData);
 
-        byte[] compressByte = bytes;
-        //byte[] compressByte = Compress(bytes);
+                stream.WriteAsync(functionTypeBytes, 0, functionTypeBytes.Length);
+                stream.WriteAsync(dataBytes, 0, dataBytes.Length);
+                stream.WriteAsync(bytes, 0, bytes.Length);
+                stream.FlushAsync();
+                break;
+            
+            case 2:
 
-        //byte[] lengthBytes = BitConverter.GetBytes(compressByte.Length);
-        //Array.Reverse(lengthBytes);
+
+                break;
+            
+            
+            case 3:
+
+
+                break;
+            
+            
+            case 4:
+
+
+                break;
+        }
 		
-        DataStructs.partialTrackingData.bytesLen = compressByte.Length;
-        byte[] dataBytes = DataStructs.StructToBytes(DataStructs.partialTrackingData);
-
-        stream.WriteAsync(functionType, 0, functionType.Length);
-        stream.WriteAsync(dataBytes, 0, dataBytes.Length);
-        stream.WriteAsync(compressByte, 0, compressByte.Length);
-        stream.FlushAsync();
     }
     
     void OnApplicationQuit()
