@@ -6,6 +6,11 @@ using System.Net.Sockets;
 using UnityEngine;
 using UnityEngine.UI;
 
+public enum FunctionTypes{
+    PartialViedoSeeThrough = 1, Mirroring = 2, VRController = 3, LipMotion = 4
+}
+
+
 public class TCP_Client : MonoBehaviour
 {
     public InputField IPInput, PortInput;
@@ -70,41 +75,42 @@ public class TCP_Client : MonoBehaviour
     }
     
     
-    public void Send(int functionType, byte[] bytes)
+    public void Send(FunctionTypes functionType, byte[] bytes = null)
     {
         if (!socketReady) return;
         if (!stream.CanWrite) return;
         
-        functionTypeBytes = BitConverter.GetBytes(functionType);
+        functionTypeBytes = BitConverter.GetBytes((int)functionType);
         Array.Reverse(functionTypeBytes);
         
         switch (functionType)
         {
-            case 1:
+            case FunctionTypes.PartialViedoSeeThrough:
                 DataStructs.partialTrackingData.bytesLen = bytes.Length;
                 byte[] dataBytes = DataStructs.StructToBytes(DataStructs.partialTrackingData);
-
+                
                 stream.WriteAsync(functionTypeBytes, 0, functionTypeBytes.Length);
                 stream.WriteAsync(dataBytes, 0, dataBytes.Length);
                 stream.WriteAsync(bytes, 0, bytes.Length);
+                
                 stream.FlushAsync();
                 break;
-            
-            case 2:
+            case FunctionTypes.Mirroring:
 
 
                 break;
             
             
-            case 3:
+            case FunctionTypes.VRController:
 
 
                 break;
             
             
-            case 4:
-
-
+            case FunctionTypes.LipMotion:
+                byte[] byteLengths = BitConverter.GetBytes((int)bytes.Length);
+                stream.WriteAsync(byteLengths, 0, byteLengths.Length);
+                stream.WriteAsync(bytes, 0, bytes.Length);
                 break;
         }
 		

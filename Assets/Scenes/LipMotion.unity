@@ -1661,6 +1661,7 @@ MonoBehaviour:
   requestHeightInput: {fileID: 1239544425}
   background: {fileID: 344981096}
   debugText: {fileID: 1647449547}
+  functionType: 4
 --- !u!1 &1725536045
 GameObject:
   m_ObjectHideFlags: 0

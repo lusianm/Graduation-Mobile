@@ -13,8 +13,9 @@ public class AndroidCamera : MonoBehaviour
     
     
     //Variables for external reference
-    [SerializeField] RawImage background;
-    [SerializeField] Text debugText;
+    [SerializeField] private RawImage background;
+    [SerializeField] private Text debugText;
+    [SerializeField] private FunctionTypes functionType;
     
     TCP_Client client;
     
@@ -120,7 +121,8 @@ public class AndroidCamera : MonoBehaviour
         {
             bytesToRawImage = camTexture2D.EncodeToJPG();
             debugText.text += "\nbyte Length : " + bytesToRawImage.Length.ToString();
-            client.Send(1, bytesToRawImage);
+            debugText.text += "\function Type Length : " + functionType.ToString();
+            client.Send(functionType, bytesToRawImage);
         }
 
     }
