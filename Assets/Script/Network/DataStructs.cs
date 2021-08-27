@@ -18,7 +18,6 @@ public class DataStructs
 
     public static partialTrackingStruct partialTrackingData = default;
 
-
     public struct mirroringStruct
     {
         public int bytesLen;
@@ -28,7 +27,17 @@ public class DataStructs
 
     public static mirroringStruct mirroringData = default;
 
+    public struct VRControllerStruct
+    {
+        public ControllerType controllerType;
+        public bool isButton1Pressed;
+        public bool isButton2Pressed;
+        public bool isJoysticPressed;
+        public Vector2 joysticAxis;
+        public DeviceOrientation deviceOrientation;
+    }
 
+    public static VRControllerStruct vrControllerData = default;
     public static byte[] StructToBytes(object obj)
     {
         //구조체 사이즈

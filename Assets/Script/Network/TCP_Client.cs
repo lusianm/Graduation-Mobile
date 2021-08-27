@@ -83,11 +83,13 @@ public class TCP_Client : MonoBehaviour
         functionTypeBytes = BitConverter.GetBytes((int)functionType);
         Array.Reverse(functionTypeBytes);
         
+        byte[] dataBytes;
+        
         switch (functionType)
         {
             case FunctionTypes.PartialViedoSeeThrough:
                 DataStructs.partialTrackingData.bytesLen = bytes.Length;
-                byte[] dataBytes = DataStructs.StructToBytes(DataStructs.partialTrackingData);
+                dataBytes = DataStructs.StructToBytes(DataStructs.partialTrackingData);
                 
                 stream.WriteAsync(functionTypeBytes, 0, functionTypeBytes.Length);
                 stream.WriteAsync(dataBytes, 0, dataBytes.Length);
@@ -102,8 +104,10 @@ public class TCP_Client : MonoBehaviour
             
             
             case FunctionTypes.VRController:
-
-
+                dataBytes = DataStructs.StructToBytes(DataStructs.vrControllerData);
+                stream.WriteAsync(functionTypeBytes, 0, functionTypeBytes.Length);
+                stream.WriteAsync(dataBytes, 0, dataBytes.Length);
+                stream.FlushAsync();
                 break;
             
             
