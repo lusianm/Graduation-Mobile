@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -25,19 +26,16 @@ public class AndroidCamera : MonoBehaviour
     private Texture2D camTexture2D = null;
     private byte[] bytesToRawImage = null;
 
+    private void Awake()
+    {
+        Screen.orientation = ScreenOrientation.Portrait;
+    }
+
     void Start()
     {
         client = TCP_Client.GetInstance();
-    }
-
-    public void TurnOnCamera()
-    {
-        requestWidth = requestWidthInput.text == "" ? requestWidth : int.Parse(requestWidthInput.text);
-        requestHeight = requestHeightInput.text == "" ? requestHeight : int.Parse(requestHeightInput.text);
         SetCamera();
-        StartCamera();
     }
-    
 
     void SetCamera()
     {
@@ -58,7 +56,10 @@ public class AndroidCamera : MonoBehaviour
                 cameraTexture = new WebCamTexture(devices[i].name, Screen.width, Screen.height);
                 
                 debugText.text = devices[i].availableResolutions.ToString();
-                Debug.Log(devices[i].availableResolutions);
+                foreach (var resolution in devices[i].availableResolutions)
+                {
+                    Debug.Log("Resolution : " + resolution.ToString());
+                }
                 break;
             }
         }
@@ -69,13 +70,9 @@ public class AndroidCamera : MonoBehaviour
             Debug.LogError("There is no available Web Cam");
             return;
         }
-
-        cameraTexture.requestedWidth = requestWidth;
-        cameraTexture.requestedHeight = requestHeight;
-        cameraTexture.requestedFPS = requestFPS;
     }
 
-    void StartCamera()
+    public void StartCamera()
     {
         if (cameraTexture == null)
         {
@@ -84,15 +81,17 @@ public class AndroidCamera : MonoBehaviour
             return;
         }
         
+        cameraTexture.requestedWidth = (requestWidthInput != null && requestWidthInput.text == "") ? requestWidth : int.Parse(requestWidthInput.text);
+        cameraTexture.requestedHeight = (requestHeightInput != null && requestHeightInput.text == "") ? requestHeight : int.Parse(requestHeightInput.text);
+        cameraTexture.requestedFPS = requestFPS;
+        
         cameraTexture.Play();
         background.texture = cameraTexture;
-        float scaleRatio = (float) Screen.width / (float) cameraTexture.height;
+        float scaleRatio = (float) background.canvas.GetComponent<CanvasScaler>().referenceResolution.x / (float) cameraTexture.height;
         background.rectTransform.sizeDelta =
             new Vector2(cameraTexture.width * scaleRatio, cameraTexture.height * scaleRatio);
-        //int orient = -cameraTexture.videoRotationAngle;
-        //background.rectTransform.localEulerAngles = new Vector3(0, 0, orient);
-
-        background.transform.rotation = Quaternion.AngleAxis(cameraTexture.videoRotationAngle, Vector3.up);
+        int orient = -cameraTexture.videoRotationAngle;
+        background.rectTransform.localEulerAngles = new Vector3(0, 0, orient);
 
         DataStructs.partialTrackingData.cameraResolution = new Vector2(cameraTexture.width, cameraTexture.height);
 
@@ -121,7 +120,7 @@ public class AndroidCamera : MonoBehaviour
         {
             bytesToRawImage = camTexture2D.EncodeToJPG();
             debugText.text += "\nbyte Length : " + bytesToRawImage.Length.ToString();
-            debugText.text += "\function Type Length : " + functionType.ToString();
+            debugText.text += "\nfunction Type Length : " + functionType.ToString();
             client.Send(functionType, bytesToRawImage);
         }
 
