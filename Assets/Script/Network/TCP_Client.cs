@@ -113,6 +113,7 @@ public class TCP_Client : MonoBehaviour
             
             case FunctionTypes.LipMotion:
                 byte[] byteLengths = BitConverter.GetBytes((int)bytes.Length);
+                Array.Reverse(byteLengths);
                 stream.WriteAsync(byteLengths, 0, byteLengths.Length);
                 stream.WriteAsync(bytes, 0, bytes.Length);
                 break;

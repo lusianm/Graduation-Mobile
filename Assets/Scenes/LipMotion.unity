@@ -2157,7 +2157,7 @@ MonoBehaviour:
   IPInput: {fileID: 10902418}
   PortInput: {fileID: 1531597134}
   serverIP: 192.168.0.1
-  serverPort: 50000
+  serverPort: 50006
   socketReady: 0
   debugText: {fileID: 1127095631}
 --- !u!4 &1911404427
