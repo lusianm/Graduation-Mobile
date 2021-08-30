@@ -5,12 +5,6 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public enum ControllerType
-{
-    RightController = 1, LeftController = 2
-}
-
-
 
 public class TouchInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler
 {
@@ -34,7 +28,7 @@ public class TouchInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
     
     void Start()
     {
-        //client = TCP_Client.GetInstance();
+        client = TCP_Client.GetInstance();
         rectTransform = transform.GetComponent<RectTransform>();
         Debug.Log("UI Position : " + transform.GetComponent<RectTransform>().anchoredPosition.ToString());
 
@@ -78,17 +72,19 @@ public class TouchInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
 
     private void FixedUpdate()
     {
-        debugText2.text = "Controller Type : " + tempVRControllerData.controllerType.ToString() +
-                          "\nIs Button 1 Pressed : " + tempVRControllerData.isButton1Pressed.ToString() +
-                          "\nIs Button 2 Pressed : " + tempVRControllerData.isButton2Pressed.ToString() +
-                          "\nIs Joystick Pressed : " + tempVRControllerData.isJoysticPressed.ToString() +
-                          "\nJoystick Axis : " + tempVRControllerData.joysticAxis.ToString() +
-                          "\nDevice Orientation : " + tempVRControllerData.deviceOrientation.ToString();
+        if (debugText2 != null)
+        {
+            debugText2.text = "Controller Type : " + tempVRControllerData.controllerType.ToString() +
+                              "\nIs Button 1 Pressed : " + tempVRControllerData.isButton1Pressed.ToString() +
+                              "\nIs Button 2 Pressed : " + tempVRControllerData.isButton2Pressed.ToString() +
+                              "\nIs Joystick Pressed : " + tempVRControllerData.isJoysticPressed.ToString() +
+                              "\nJoystick Axis : " + tempVRControllerData.joysticAxis.ToString() +
+                              "\nDevice Orientation : " + tempVRControllerData.deviceOrientation.ToString();
+        }
+
         //Send Data
-        DataStructs.vrControllerData = tempVRControllerData;
-        //client.Send(functionType);
-        
-        
+        TouchInfoManager.SetControllerData(tempVRControllerData);
+
         //Data를 보낸 뒤에 다시 값 체크를 하는 이유는
         //적어도 한번은 Button이 눌렸다는 신호를 꼭 보내기 위해서 
         
@@ -154,16 +150,19 @@ public class TouchInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
             joystickAxis = (touchDragPoint - touchStartPoint).normalized;
         }
 
-        debugText1.text = "Button 1 Pressed : " + button1Pressed.ToString() +
-            "\nButton 1 PointerID : " + button1PointerID.ToString() +
-            "\nButton 2 Pressed : " + button2Pressed.ToString() +
-            "\nButton 2 PointerID : " + button2PointerID.ToString() +
-            "\nJoystick Pressed : " + joystickPressed.ToString() +
-            "\nJoystick Axis : " + joystickAxis.ToString() +
-            "\nCurrent Drag Point : " + touchDragPoint.ToString() +
-            "\nDevice Orientation : " + deviceOrientation.ToString();
+        if (debugText1 != null)
+        {
+            debugText1.text = "Button 1 Pressed : " + button1Pressed.ToString() +
+                              "\nButton 1 PointerID : " + button1PointerID.ToString() +
+                              "\nButton 2 Pressed : " + button2Pressed.ToString() +
+                              "\nButton 2 PointerID : " + button2PointerID.ToString() +
+                              "\nJoystick Pressed : " + joystickPressed.ToString() +
+                              "\nJoystick Axis : " + joystickAxis.ToString() +
+                              "\nCurrent Drag Point : " + touchDragPoint.ToString() +
+                              "\nDevice Orientation : " + deviceOrientation.ToString();
 
-        //Debug.Log("Device Orientation : " + Input.deviceOrientation);
+            //Debug.Log("Device Orientation : " + Input.deviceOrientation);
+        }
 
     }
 
@@ -250,16 +249,16 @@ public class TouchInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
             case DeviceOrientation.LandscapeLeft:
             case DeviceOrientation.Portrait:
                 if ((touchPanelFlip) ?
-                    (eventData.position.y < -rectTransform.anchoredPosition.y):
-                    (eventData.position.y >= -rectTransform.anchoredPosition.y))
+                    (eventData.position.y >= -rectTransform.anchoredPosition.y):
+                    (eventData.position.y < -rectTransform.anchoredPosition.y))
                     return true;
                 else
                     return false;
             case DeviceOrientation.LandscapeRight:
             case DeviceOrientation.PortraitUpsideDown:
                 if ((touchPanelFlip) ?
-                    (eventData.position.y >= -rectTransform.anchoredPosition.y) :
-                    (eventData.position.y < -rectTransform.anchoredPosition.y))
+                    (eventData.position.y < -rectTransform.anchoredPosition.y) :
+                    (eventData.position.y >= -rectTransform.anchoredPosition.y))
                     return true;
                 else
                     return false;

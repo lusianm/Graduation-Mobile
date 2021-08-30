@@ -43,7 +43,12 @@ public class TCP_Client : MonoBehaviour
         }
         DontDestroyOnLoad(gameObject);
     }
-    
+
+    private void Awake()
+    {
+        Time.fixedDeltaTime = 1f / 60f;
+    }
+
     /*
     [SerializeField] private ClickEventDetector eventDetector;
     */
@@ -104,7 +109,7 @@ public class TCP_Client : MonoBehaviour
             
             
             case FunctionTypes.VRController:
-                dataBytes = DataStructs.StructToBytes(DataStructs.vrControllerData);
+                dataBytes = DataStructs.StructToBytes(DataStructs.vrControllersData);
                 stream.WriteAsync(functionTypeBytes, 0, functionTypeBytes.Length);
                 stream.WriteAsync(dataBytes, 0, dataBytes.Length);
                 stream.FlushAsync();
@@ -120,6 +125,36 @@ public class TCP_Client : MonoBehaviour
         }
 		
     }
+    
+    public void Send(FunctionTypes functionType, DataStructs.VRControllerStruct controllerData)
+    {
+        if (!socketReady) return;
+        if (!stream.CanWrite) return;
+        
+        functionTypeBytes = BitConverter.GetBytes((int)functionType);
+        Array.Reverse(functionTypeBytes);
+        
+        byte[] dataBytes;
+        
+        switch (functionType)
+        {
+            case FunctionTypes.PartialViedoSeeThrough:
+                break;
+            case FunctionTypes.Mirroring:
+                break;
+            case FunctionTypes.VRController:
+                dataBytes = DataStructs.StructToBytes(controllerData);
+                stream.WriteAsync(functionTypeBytes, 0, functionTypeBytes.Length);
+                stream.WriteAsync(dataBytes, 0, dataBytes.Length);
+                stream.FlushAsync();
+                break;
+            case FunctionTypes.LipMotion:
+                break;
+        }
+		
+    }
+    
+    
     
     void OnApplicationQuit()
     {
