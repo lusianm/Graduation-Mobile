@@ -25,8 +25,6 @@ public class TCP_Client : MonoBehaviour
 
     private byte[] functionTypeBytes;
     
-    public Text debugText;
-
     private static TCP_Client instance;
 
     public static TCP_Client GetInstance() => instance;
@@ -58,9 +56,26 @@ public class TCP_Client : MonoBehaviour
         // 이미 연결되었다면 함수 무시
         if (socketReady) return;
 
+        string ip;
+        int port;
         // 기본 호스트 / 포트번호
-        string ip = IPInput.text == "" ? serverIP : IPInput.text;
-        int port = PortInput.text == "" ? serverPort : int.Parse(PortInput.text);
+        if (IPInput != null)
+        {
+            ip = IPInput.text == "" ? serverIP : IPInput.text;
+        }
+        else
+        {
+            ip = serverIP;
+        }
+
+        if (PortInput != null)
+        {
+            port = PortInput.text == "" ? serverPort : int.Parse(PortInput.text);
+        }
+        else
+        {
+            port = serverPort;
+        }
 
         // 소켓 생성
         try
@@ -93,13 +108,15 @@ public class TCP_Client : MonoBehaviour
         switch (functionType)
         {
             case FunctionTypes.PartialViedoSeeThrough:
+                if (bytes == null)
+                    return;
                 DataStructs.partialTrackingData.bytesLen = bytes.Length;
+                Debug.Log("Sending Byte Length : " + bytes.Length);
                 dataBytes = DataStructs.StructToBytes(DataStructs.partialTrackingData);
                 
                 stream.WriteAsync(functionTypeBytes, 0, functionTypeBytes.Length);
                 stream.WriteAsync(dataBytes, 0, dataBytes.Length);
                 stream.WriteAsync(bytes, 0, bytes.Length);
-                
                 stream.FlushAsync();
                 break;
             case FunctionTypes.Mirroring:

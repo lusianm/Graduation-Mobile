@@ -2005,10 +2005,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   IPInput: {fileID: 729800685}
   PortInput: {fileID: 1585576185}
-  serverIP: 192.168.0.1
-  serverPort: 50006
+  serverIP: 192.168.0.2
+  serverPort: 50000
   socketReady: 0
-  debugText: {fileID: 1735970371}
 --- !u!4 &1911404427
 Transform:
   m_ObjectHideFlags: 0

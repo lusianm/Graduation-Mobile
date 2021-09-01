@@ -80,9 +80,25 @@ public class AndroidCamera : MonoBehaviour
             Debug.LogError("There is no available Web Cam");
             return;
         }
+
+        if (requestWidthInput != null)
+        {
+            cameraTexture.requestedWidth = (requestWidthInput.text == "") ? requestWidth : int.Parse(requestWidthInput.text);
+        }
+        else
+        {
+            cameraTexture.requestedWidth = requestWidth;
+        }
+
+        if (requestHeightInput != null)
+        {
+            cameraTexture.requestedHeight = (requestHeightInput.text == "") ? requestHeight : int.Parse(requestHeightInput.text);
+        }
+        else
+        {
+            cameraTexture.requestedHeight = requestHeight;
+        }
         
-        cameraTexture.requestedWidth = (requestWidthInput != null && requestWidthInput.text == "") ? requestWidth : int.Parse(requestWidthInput.text);
-        cameraTexture.requestedHeight = (requestHeightInput != null && requestHeightInput.text == "") ? requestHeight : int.Parse(requestHeightInput.text);
         cameraTexture.requestedFPS = requestFPS;
         
         cameraTexture.Play();
