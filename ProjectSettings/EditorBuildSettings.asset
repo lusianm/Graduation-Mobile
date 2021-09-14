@@ -6,12 +6,15 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/VRController.unity
-    guid: 0d05fc5ab03da6b4ebce9f143317f115
-  - enabled: 0
-    path: Assets/Scenes/LipMotion.unity
-    guid: 190959b37d7baac40aa2c8e89cec5d89
-  - enabled: 0
+    path: Assets/Scenes/MainScene.unity
+    guid: 8aec8db9615ae0a47bad45d6caf886dd
+  - enabled: 1
     path: Assets/Scenes/PartialVideoSeeThrough.unity
     guid: a697359a8257fdd4ab4a52b1358e211d
+  - enabled: 1
+    path: Assets/Scenes/VRController.unity
+    guid: 0d05fc5ab03da6b4ebce9f143317f115
+  - enabled: 1
+    path: Assets/Scenes/LipMotion.unity
+    guid: 190959b37d7baac40aa2c8e89cec5d89
   m_configObjects: {}

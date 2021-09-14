@@ -13,11 +13,12 @@ public enum FunctionTypes{
 
 public class TCP_Client : MonoBehaviour
 {
+    [SerializeField] private ModeChanger modeChanger;
     public InputField IPInput, PortInput;
     public string serverIP;
     public int serverPort;
     
-    public bool socketReady;
+    private bool socketReady;
     TcpClient socket;
     NetworkStream stream;
     StreamWriter writer;
@@ -28,6 +29,8 @@ public class TCP_Client : MonoBehaviour
     private static TCP_Client instance;
 
     public static TCP_Client GetInstance() => instance;
+
+    public bool isConnected() => socketReady;
     
     private void OnEnable()
     {
@@ -47,10 +50,18 @@ public class TCP_Client : MonoBehaviour
         Time.fixedDeltaTime = 1f / 60f;
     }
 
-    /*
-    [SerializeField] private ClickEventDetector eventDetector;
-    */
-    
+    private void Update()
+    {
+        if (stream.DataAvailable)
+        {
+            byte[] functionTypeBytes = BitConverter.GetBytes((int) 0);
+            stream.Read(functionTypeBytes, 0, functionTypeBytes.Length);
+            int currentFunctionType = BitConverter.ToInt32(functionTypeBytes, 0);
+            modeChanger.SceneChagne(currentFunctionType);
+        }
+        
+    }
+
     public void ConnectToServer()
     {
         // 이미 연결되었다면 함수 무시
@@ -91,7 +102,7 @@ public class TCP_Client : MonoBehaviour
             Debug.Log("Socket Error : " + e.Message);
         }
         Debug.Log("Connected to Server");
-        
+        modeChanger.SceneChagne(SceneType.partialVideoSeeThrough);
     }
     
     
@@ -170,9 +181,7 @@ public class TCP_Client : MonoBehaviour
         }
 		
     }
-    
-    
-    
+
     void OnApplicationQuit()
     {
         CloseSocket();

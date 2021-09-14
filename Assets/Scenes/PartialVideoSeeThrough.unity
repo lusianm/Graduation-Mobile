@@ -951,7 +951,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1116898815
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2003,11 +2003,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bded62db27434c746903362aaad3767f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  modeChanger: {fileID: 0}
   IPInput: {fileID: 729800685}
   PortInput: {fileID: 1585576185}
   serverIP: 192.168.0.2
   serverPort: 50000
-  socketReady: 0
 --- !u!4 &1911404427
 Transform:
   m_ObjectHideFlags: 0

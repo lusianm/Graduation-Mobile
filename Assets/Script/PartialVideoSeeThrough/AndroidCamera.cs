@@ -35,6 +35,7 @@ public class AndroidCamera : MonoBehaviour
     {
         client = TCP_Client.GetInstance();
         SetCamera();
+        StartCamera();
     }
 
     void SetCamera()
@@ -132,7 +133,7 @@ public class AndroidCamera : MonoBehaviour
         debugText.text += "\nscreen height : " + Screen.height.ToString();
         debugText.text += "\ntexture format : " + camTexture2D.format.ToString();
         
-        if (client.socketReady)
+        if (client.isConnected())
         {
             bytesToRawImage = camTexture2D.EncodeToJPG();
             debugText.text += "\nbyte Length : " + bytesToRawImage.Length.ToString();
