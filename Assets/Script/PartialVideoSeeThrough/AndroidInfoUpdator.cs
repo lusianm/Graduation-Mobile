@@ -7,12 +7,14 @@ public class AndroidInfoUpdator : MonoBehaviour
     // Start is called before the first frame update
 
     private Gyroscope gyro;
+    [SerializeField] private Transform rotationInfo;
+    Quaternion ToUnityGyro(Quaternion q) => new Quaternion(q.x, q.y, -q.z, -q.w);  
     
     void Start()
     {
         DataStructs.partialTrackingData.isTrack = false;
         DataStructs.partialTrackingData.trackedPosition = Vector2.zero;
-        DataStructs.partialTrackingData.trackedRotation = Quaternion.identity;
+        DataStructs.partialTrackingData.trackedRotation = Quaternion.identity.eulerAngles;
 
         gyro = Input.gyro;
         gyro.enabled = true;
@@ -34,14 +36,15 @@ public class AndroidInfoUpdator : MonoBehaviour
             androidTransform.Rotate(0f, 0f, 180f, Space.Self);
             androidTransform.Rotate(90f, 180f, 0f, Space.World);
             */
-            DataStructs.partialTrackingData.trackedRotation = gyro.attitude;
+            rotationInfo.rotation = ToUnityGyro(gyro.attitude);
+            DataStructs.partialTrackingData.trackedRotation = rotationInfo.rotation.eulerAngles;
         }
         else
         {
             DataStructs.partialTrackingData.isTrack = false;
             DataStructs.partialTrackingData.isRight = false;
             DataStructs.partialTrackingData.trackedPosition = Vector2.zero;
-            DataStructs.partialTrackingData.trackedRotation = Quaternion.identity;
+            DataStructs.partialTrackingData.trackedRotation = Quaternion.identity.eulerAngles;
             
         }
         

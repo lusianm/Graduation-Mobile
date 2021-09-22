@@ -13,7 +13,7 @@ public class DataStructs
         public bool isRight;
         public Vector2 cameraResolution;
         public Vector2 trackedPosition;
-        public Quaternion trackedRotation;
+        public Vector3 trackedRotation;
     }
 
     public static partialTrackingStruct partialTrackingData = default;
@@ -43,6 +43,15 @@ public class DataStructs
         public VRControllerStruct rightController, leftController;
     }
     public static VRControllersStruct vrControllersData = default;
+    
+    public struct VRKeyboardStruct
+    {
+        public int touchID;
+        public bool isPressed;
+        public Vector2 touchPosition;
+        public Vector2 screenResolution;
+    }
+    
     public static byte[] StructToBytes(object obj)
     {
         //구조체 사이즈

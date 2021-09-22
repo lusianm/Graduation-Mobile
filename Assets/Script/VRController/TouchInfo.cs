@@ -14,7 +14,7 @@ public class TouchInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
     public bool touchPanelFlip = false;
     public bool button1Pressed, button2Pressed, joystickPressed;
 
-    public Text debugText1, debugText2; 
+    [SerializeField] private Text debugText1, debugText2; 
 
     public Vector2 joystickAxis;
     int button1PointerID, button2PointerID, joystickPointerID;
@@ -24,39 +24,18 @@ public class TouchInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
     DeviceOrientation deviceOrientation;
 
     private DataStructs.VRControllerStruct tempVRControllerData = default;
-    private TCP_Client client;
+    [SerializeField] private bool isProtraitMode = false;
     
     void Start()
     {
-        client = TCP_Client.GetInstance();
         rectTransform = transform.GetComponent<RectTransform>();
         Debug.Log("UI Position : " + transform.GetComponent<RectTransform>().anchoredPosition.ToString());
+        deviceOrientation = DeviceOrientation.LandscapeLeft;
 
-
-        Screen.orientation = ScreenOrientation.Landscape;
         deviceOrientation = (Input.deviceOrientation == DeviceOrientation.FaceDown ||
                              Input.deviceOrientation == DeviceOrientation.FaceUp ||
                              Input.deviceOrientation == DeviceOrientation.Unknown)
-                            ? DeviceOrientation.LandscapeLeft : Input.deviceOrientation;
-        Debug.Log(Screen.dpi);
-        
-        if ((Screen.orientation == ScreenOrientation.Portrait) ||
-            (Screen.orientation == ScreenOrientation.PortraitUpsideDown))
-        {
-            Debug.Log("Portrait Screen");
-            Screen.SetResolution(Screen.height, Screen.width, true);
-            
-        }
-        else
-        {
-            Screen.SetResolution(Screen.width, Screen.height, true);
-        }
-
-
-        Debug.Log(Screen.orientation);
-        
-        Debug.Log("Screen Width And Height : " + Screen.width.ToString() + " : " + Screen.height.ToString());
-        Debug.Log(Screen.dpi);
+                            ? deviceOrientation : Input.deviceOrientation;
         
         //Temp Struct Set
         tempVRControllerData.controllerType = controllerType;
@@ -66,8 +45,6 @@ public class TouchInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         tempVRControllerData.joysticAxis = Vector2.zero;
         tempVRControllerData.deviceOrientation = deviceOrientation;
         
-        
-        //Fixed Update 간격 조정하는 코드 필요
     }
 
     private void FixedUpdate()
@@ -138,16 +115,22 @@ public class TouchInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         //UI Pivot Position : Vector2 pivotPosition = transform.GetComponent<RectTransform>().anchoredPosition;
 
         //Check Device Orientation
-        if (Input.deviceOrientation != DeviceOrientation.FaceDown
-            && Input.deviceOrientation != DeviceOrientation.FaceUp
-            && Input.deviceOrientation != DeviceOrientation.Unknown)
-        {
-            deviceOrientation = Input.deviceOrientation;
-        }
+        deviceOrientation = (Input.deviceOrientation == DeviceOrientation.FaceDown ||
+                             Input.deviceOrientation == DeviceOrientation.FaceUp ||
+                             Input.deviceOrientation == DeviceOrientation.Unknown)
+            ? deviceOrientation : Input.deviceOrientation;
 
         if (joystickPressed)
         {
-            joystickAxis = (touchDragPoint - touchStartPoint).normalized;
+            if (!isProtraitMode)
+            {
+                joystickAxis = (touchDragPoint - touchStartPoint).normalized;
+            }
+            else
+            {
+                joystickAxis = (touchDragPoint - touchStartPoint).normalized;
+                joystickAxis = new Vector2(joystickAxis.y, -joystickAxis.x);
+            }
         }
 
         if (debugText1 != null)
@@ -225,6 +208,12 @@ public class TouchInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
             if ((button1Pressed && Time.time < button1TouchTime) ||
                 (button2Pressed && Time.time < button2TouchTime))
             {
+                /*
+                if((eventData.pressPosition - eventData.position).magnitude > 0.2f)
+                  
+                 */
+                
+                    
                 joystickPressed = true;
                 joystickPointerID = eventData.pointerId;
                 touchDragPoint = eventData.position;

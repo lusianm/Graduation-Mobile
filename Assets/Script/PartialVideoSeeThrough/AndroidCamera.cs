@@ -26,6 +26,7 @@ public class AndroidCamera : MonoBehaviour
     private Texture2D camTexture2D = null;
     private byte[] bytesToRawImage = null;
 
+
     private void Awake()
     {
         Screen.orientation = ScreenOrientation.Portrait;

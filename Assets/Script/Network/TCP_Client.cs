@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public enum FunctionTypes{
-    PartialViedoSeeThrough = 1, Mirroring = 2, VRController = 3, LipMotion = 4
+    PartialViedoSeeThrough = 1, Mirroring = 2, VRController = 3, VRKeyboard = 4
 }
 
 
@@ -20,9 +20,9 @@ public class TCP_Client : MonoBehaviour
     
     private bool socketReady;
     TcpClient socket;
-    NetworkStream stream;
-    StreamWriter writer;
-    StreamReader reader;
+    private NetworkStream stream = null;
+    private StreamWriter writer;
+    private StreamReader reader;
 
     private byte[] functionTypeBytes;
     
@@ -52,6 +52,9 @@ public class TCP_Client : MonoBehaviour
 
     private void Update()
     {
+        if (stream == null)
+            return;
+        
         if (stream.DataAvailable)
         {
             byte[] functionTypeBytes = BitConverter.GetBytes((int) 0);
@@ -144,7 +147,7 @@ public class TCP_Client : MonoBehaviour
                 break;
             
             
-            case FunctionTypes.LipMotion:
+            case FunctionTypes.VRKeyboard:
                 byte[] byteLengths = BitConverter.GetBytes((int)bytes.Length);
                 Array.Reverse(byteLengths);
                 stream.WriteAsync(byteLengths, 0, byteLengths.Length);
@@ -176,7 +179,36 @@ public class TCP_Client : MonoBehaviour
                 stream.WriteAsync(dataBytes, 0, dataBytes.Length);
                 stream.FlushAsync();
                 break;
-            case FunctionTypes.LipMotion:
+            case FunctionTypes.VRKeyboard:
+                break;
+        }
+		
+    }
+    
+    
+    public void Send(FunctionTypes functionType, DataStructs.VRKeyboardStruct keyboardData)
+    {
+        if (!socketReady) return;
+        if (!stream.CanWrite) return;
+        
+        functionTypeBytes = BitConverter.GetBytes((int)functionType);
+        Array.Reverse(functionTypeBytes);
+        
+        byte[] dataBytes;
+        
+        switch (functionType)
+        {
+            case FunctionTypes.PartialViedoSeeThrough:
+                break;
+            case FunctionTypes.Mirroring:
+                break;
+            case FunctionTypes.VRController:
+                break;
+            case FunctionTypes.VRKeyboard:
+                dataBytes = DataStructs.StructToBytes(keyboardData);
+                stream.WriteAsync(functionTypeBytes, 0, functionTypeBytes.Length);
+                stream.WriteAsync(dataBytes, 0, dataBytes.Length);
+                stream.FlushAsync();
                 break;
         }
 		
