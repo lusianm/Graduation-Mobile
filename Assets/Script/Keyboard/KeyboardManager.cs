@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class KeyboardManager : MonoBehaviour
 {
@@ -18,7 +19,6 @@ public class KeyboardManager : MonoBehaviour
         
         client = TCP_Client.GetInstance();
         vrKeyboardLists = new List<DataStructs.VRKeyboardStruct>();
-        screenResolution = new Vector2(Screen.currentResolution.height, Screen.currentResolution.width);
         //Debug.Log("Screen Size : " + Screen.currentResolution.ToString());
 
     }
@@ -26,6 +26,8 @@ public class KeyboardManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        screenResolution = new Vector2(Screen.currentResolution.width, Screen.currentResolution.height);
+        
         SendTouchInfo();
         RemovePointerUpTouchInfo();
     }
