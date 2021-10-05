@@ -59,24 +59,25 @@ public class TouchInfoManager : MonoBehaviour
         switch (curretnMode)
         {
             case 1:
-                if (currentDeviceOrientation == DeviceOrientation.Portrait)
+                if (currentDeviceOrientation == DeviceOrientation.Portrait
+                || currentDeviceOrientation == DeviceOrientation.PortraitUpsideDown)
                 {
                     mode1Panel.SetActive(false);
                     mode2Panel.SetActive(true);
                     InitControllerDate();
                     curretnMode = 2;
                 }
-
                 break;
+            
             case 2:
-                if (currentDeviceOrientation == DeviceOrientation.LandscapeLeft)
+                if (currentDeviceOrientation == DeviceOrientation.LandscapeLeft
+                || currentDeviceOrientation == DeviceOrientation.LandscapeRight)
                 {
                     mode1Panel.SetActive(true);
                     mode2Panel.SetActive(false);
                     InitControllerDate();
                     curretnMode = 1;
                 }
-
                 break;
         }
         
